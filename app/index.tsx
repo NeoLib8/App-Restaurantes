@@ -6,7 +6,7 @@ import { AppHeader } from '../components/AppHeader'
 import { AppDrawer } from '../components/AppDrawer'
 import { AppText } from '../components/AppText'
 import { useState } from 'react'
-import { AppCategoryCard } from '../components/AppCard'
+import { AppCategoryCard } from '../components/AppCategoryCard'
 
 export default function Home() {
     const [drawerOpen, setDrawerOpen] = useState(false)
