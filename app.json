@@ -3,6 +3,7 @@
     "name": "App-Restaurantes",
     "slug": "App-Restaurantes",
     "version": "1.0.0",
+    "scheme": "restaurantes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -26,7 +27,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ]
   }
 }

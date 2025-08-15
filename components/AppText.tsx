@@ -21,7 +21,7 @@ export function AppText({
       style={[
         styles.text,
         {
-          fontSize: theme.fontSizes[size],                     // Asigna tamaño según key del tema
+          fontSize: theme.fontSize[size],                     // Asigna tamaño según key del tema
           fontWeight: weight === 'bold' ? 'bold' : 'normal',   // Controla el grosor del texto
           color: color ?? theme.colors.text,                   // Usa color personalizado o por defecto
         },

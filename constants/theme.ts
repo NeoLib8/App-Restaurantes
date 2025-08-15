@@ -1,9 +1,17 @@
+const baseColors = {
+  white: '#FFFFFF',
+  black: '#000000',
+  transparent: 'transparent',
+  gray: '#888888',
+  red: '#FF0000',
+}
 export const theme = {
   colors: {
+    ...baseColors,
     primary: '#FFD600',      // Amarillo
     secondary: '#000000',    // Negro
-    background: '#FFFFFF',   // Fondo blanco
-    text: '#222222',         // Texto principal
+    background: '#1a1818ff',   // Fondo blanco
+    text: '#52902eff',         // Texto principal
     muted: '#888888',        // Texto gris
     danger: '#FF3B30',       // Errores
     success: '#34C759',      // Confirmaciones
@@ -12,8 +20,9 @@ export const theme = {
     lightGray: '#F5F5F5',    // Fondos secundarios
     overlay: '#00000066',    // Fondo semitransparente
   },
+  
 
-  fontSizes: {
+  fontSize: {
     display: 32,
     heading: 26,
     title: 22,
@@ -21,6 +30,7 @@ export const theme = {
     small: 13,
     caption: 11,
   },
+  
 
   spacing: {
     none: 0,
@@ -40,11 +50,11 @@ export const theme = {
   },
 
   fontFamily: {
-    regular: 'System',
-    bold: 'System',
-    medium: 'System',
-    light: 'System',
+      archivo: 'Archivo',
+      archivoThin: 'ArchivoThin',
+      archivoBold: 'ArchivoBold',
   },
+
 
   iconSize: {
     sm: 16,

@@ -32,11 +32,10 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: theme.borderRadius,
     alignItems: 'center',  // Centra el texto horizontalmente
   },
   text: {
-    fontSize: theme.fontSizes.body,
+    fontSize: theme.fontSize.body,
     fontWeight: '600',     // Seminegrita para dar énfasis sin ser tan fuerte como 'bold'
   },
 })
