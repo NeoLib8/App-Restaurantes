@@ -49,8 +49,7 @@ export function AppHeader({
 
         {/* Icono de carrito con cantidad y total formateado con 2 decimales */}
         <Pressable onPress={() => {
-          console.log('Carrito presionado')
-          onCartPress
+          onCartPress()
         }} style={styles.cartInfo}>
           <Ionicons name="cart-outline" size={22} color="black" />
           <Text style={styles.cartText}>

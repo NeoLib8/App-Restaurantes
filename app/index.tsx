@@ -1,11 +1,10 @@
 // app/index.tsx
-import LoginScreen from '@/features/auth/screens/LoginScreen'
-
+import SelectOrderTypeScreen from "@/features/entry/screens/SelectOrderTypeScreen"
 
 export default function Home() {
 
   return (
-      <LoginScreen />
+      <SelectOrderTypeScreen />
       
   )
 }

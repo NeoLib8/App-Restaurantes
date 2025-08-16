@@ -3,6 +3,11 @@
 import { Animated, Dimensions, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useEffect, useRef } from 'react'
 import { theme } from '../constants/theme'
+import { useSessionStore } from '@/stores/sessionStore'
+import { useRouter } from 'expo-router'
+import { logout } from '@/lib/logout'
+
+
 
 // Props que recibe el drawer: si está visible y función para cerrarlo
 type Props = {
@@ -22,7 +27,14 @@ export function AppDrawer({ visible, onClose }: Props) {
   const screenHeight = Dimensions.get('window').height
   const drawerHeight = Math.max(screenHeight, 500) // Asegura un mínimo de altura
   const drawerWidth = Dimensions.get('window').width * 0.7
+  const { user } = useSessionStore()
+  const router = useRouter()
 
+  const handleLogout = async () => {
+    await logout()
+    onClose()
+    router.replace('/') // o 'auth/login' si usas esa ruta
+  }
   // slideAnim es un valor animado que controla la posición horizontal del drawer
   const slideAnim = useRef(new Animated.Value(-drawerWidth)).current
 
@@ -64,9 +76,20 @@ export function AppDrawer({ visible, onClose }: Props) {
         ))}
 
         {/* Zona inferior de login separada visualmente */}
-        <View style={styles.loginBox}>
-          <Text style={styles.login}> &gt; Iniciar sesión</Text>
-        </View>
+              <View style={styles.loginBox}>
+        {user ? (
+          <Pressable onPress={handleLogout}>
+            <Text style={[styles.login, { color: 'red' }]}> &gt; Cerrar sesión</Text>
+          </Pressable>
+        ) : (
+          <Pressable onPress={() => {
+            onClose()
+            router.push('/auth/login') // cambia esto si usas otra ruta
+          }}>
+            <Text style={styles.login}> &gt; Iniciar sesión</Text>
+          </Pressable>
+        )}
+      </View>
       </Animated.View>
     </>
   )

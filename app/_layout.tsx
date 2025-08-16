@@ -1,27 +1,40 @@
-import { Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { SplashScreen } from 'expo-router';
-import { useCustomFonts } from '@/lib/fonts';
+// app/_layout.tsx
+import { Stack } from 'expo-router'
+import { useEffect } from 'react'
+import { SplashScreen } from 'expo-router'
+import { useCustomFonts } from '@/lib/fonts'
+import { View, StyleSheet } from 'react-native'
+import DebugInfo from '@/components/DebugInfo'
 
-// Evita que el SplashScreen se oculte automáticamente
-// hasta que las fuentes estén completamente cargadas
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
-  // Hook personalizado que carga tus fuentes desde /lib/fonts.ts
-  const [fontsLoaded] = useCustomFonts();
+  const [fontsLoaded] = useCustomFonts()
 
-  // Cuando las fuentes se cargan, ocultamos el splash
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync()
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded])
 
-  // Si las fuentes aún no están listas, no renderizamos nada
-  // (para evitar flashes de texto sin estilo)
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded) return null
 
-  // Una vez cargadas las fuentes, renderizamos la navegación principal
-  return <Stack />;
+  return (
+    <View style={{ flex: 1 }}>
+      <Stack />
+      <View style={styles.debugContainer}>
+        <DebugInfo />
+      </View>
+    </View>
+  )
 }
+
+const styles = StyleSheet.create({
+  debugContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 8
+  }
+})
