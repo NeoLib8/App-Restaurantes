@@ -154,3 +154,5 @@ export type EventLog = {
   description?: string
   created_at: string
 }
+
+export type CustomizationType = 'none' | 'options' | 'observations'

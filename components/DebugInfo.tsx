@@ -4,13 +4,16 @@ import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { useOrderStore } from '@/stores/orderStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useCartStore } from '@/stores/cartStore'
+import { getCartTotals } from '@/lib/cart'
+
 
 export default function DebugInfo() {
   const [visible, setVisible] = useState(false)
 
   const { orderType, selectedBranch } = useOrderStore()
   const { user, session } = useSessionStore()
-  const { items, total } = useCartStore()
+ const { items } = useCartStore()
+  const { totalQuantity, totalPrice } = getCartTotals(items)
 
   return (
     <View style={styles.container}>
@@ -38,7 +41,7 @@ export default function DebugInfo() {
             {session?.access_token.slice(0, 12) ?? '—'}
           </Text>
 
-          <Text style={styles.label}>🛒 Carrito ({items.length} productos):</Text>
+          <Text style={styles.label}>🛒 Carrito ({totalQuantity} productos):</Text>
           {items.length === 0 ? (
             <Text style={styles.value}>—</Text>
           ) : (
@@ -49,7 +52,7 @@ export default function DebugInfo() {
             ))
           )}
 
-          <Text style={[styles.value, { fontWeight: 'bold', marginTop: 4 }]}>Total: €{total.toFixed(2)}</Text>
+          <Text style={[styles.value, { fontWeight: 'bold', marginTop: 4 }]}>Total: €{totalPrice.toFixed(2)}</Text>
         </View>
       )}
     </View>

@@ -1,51 +1,67 @@
-// features/cart/screens/CartScreen.tsx
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native'
+import { View, Text, FlatList, Pressable, StyleSheet, Alert } from 'react-native'
 import { useCartStore } from '@/stores/cartStore'
+import { AppHeader } from '@/components/AppHeader'
+import { useRouter } from 'expo-router'
+import { CartItem } from '@/features/cart/components/CartItem'
+
 
 export default function CartScreen() {
-  const { items, total, removeItem, updateQuantity, clearCart } = useCartStore()
+  const router = useRouter()
+  const { items, removeItem, updateQuantity } = useCartStore()
+
+  // ✅ Calculamos total de forma reactiva
+const total = items.reduce((sum, item) => {
+  const optionsTotal = item.option_items?.reduce((s, o) => s + o.price, 0) ?? 0
+  const unit = item.base_price + optionsTotal
+  return sum + unit * item.quantity
+}, 0)
+
+  const handleContinue = () => {
+    if (items.length === 0) {
+      Alert.alert('Carrito vacío', 'Añade productos antes de continuar.')
+      return
+    }
+
+    // TODO: verificar login, continuar al paso de dirección/pago
+    router.push('/confirm')
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🛒 Tu carrito</Text>
+    <>
+      <AppHeader
+        title="CARRITO"
+        leftIcon="arrow-back"
+        onLeftPress={() => router.back()}
+        showSearch={false}
+        showCart={false}
+      />
 
-      {items.length === 0 ? (
-        <Text>No tienes productos añadidos.</Text>
-      ) : (
-        <>
-          <FlatList
-            data={items}
-            keyExtractor={(item) => item.product_id}
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Text style={styles.name}>
-                  {item.name} — {item.quantity}x €{item.base_price.toFixed(2)}
-                </Text>
-                <Text>Total: €{item.total_price.toFixed(2)}</Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Tu pedido</Text>
 
-                <View style={styles.actions}>
-                  <Pressable onPress={() => updateQuantity(item.product_id, item.quantity + 1)}>
-                    <Text style={styles.btn}>➕</Text>
-                  </Pressable>
-                  <Pressable onPress={() => updateQuantity(item.product_id, item.quantity - 1)}>
-                    <Text style={styles.btn}>➖</Text>
-                  </Pressable>
-                  <Pressable onPress={() => removeItem(item.product_id)}>
-                    <Text style={[styles.btn, { color: 'red' }]}>🗑️</Text>
-                  </Pressable>
-                </View>
-              </View>
-            )}
-          />
-
+        <FlatList
+          data={items}
+          keyExtractor={(item) =>
+            `${item.product_id}-${item.observation ?? ''}-${item.option_items?.map((o) => o.name).join(',')}`
+          }
+          ListEmptyComponent={<Text style={{ textAlign: 'center' }}>Tu carrito está vacío.</Text>}
+          renderItem={({ item }) => (
+            <CartItem
+              item={item}
+              onAdd={() => updateQuantity(item.product_id, item.quantity + 1)}
+              onSubtract={() => updateQuantity(item.product_id, Math.max(1, item.quantity - 1))}
+              onRemove={() => removeItem(item.product_id)}
+            />
+          )}
+        />
+        <View style={styles.footer}>
           <Text style={styles.total}>Total: €{total.toFixed(2)}</Text>
-
-          <Pressable style={styles.clearButton} onPress={clearCart}>
-            <Text style={styles.clearButtonText}>Vaciar carrito</Text>
+          <Pressable style={styles.button} onPress={handleContinue}>
+            <Text style={styles.buttonText}>Continuar pedido</Text>
           </Pressable>
-        </>
-      )}
-    </View>
+        </View>
+      </View>
+    </>
   )
 }
 
@@ -57,40 +73,78 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 16
+    marginVertical: 16
   },
-  card: {
+  itemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
     padding: 12,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#f3f3f3',
     borderRadius: 8
   },
-  name: {
-    fontWeight: '600',
-    fontSize: 16
+  itemText: {
+    flex: 1
   },
-  actions: {
+  itemName: {
+    fontSize: 16,
+    fontWeight: '500'
+  },
+  itemPrice: {
+    fontSize: 14,
+    color: '#555'
+  },
+  controls: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 8
+    alignItems: 'center'
   },
-  btn: {
-    fontSize: 20
+  controlBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 4,
+    marginHorizontal: 4
+  },
+  qty: {
+    fontSize: 16,
+    marginHorizontal: 4
+  },
+  deleteBtn: {
+    marginLeft: 8
+  },
+  footer: {
+    marginTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    paddingTop: 16
   },
   total: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 24
+    marginBottom: 12,
+    textAlign: 'right'
   },
-  clearButton: {
-    marginTop: 16,
+  button: {
     backgroundColor: '#000',
     padding: 14,
-    borderRadius: 6
+    borderRadius: 8
   },
-  clearButtonText: {
+  buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  optionText: {
+  fontSize: 14,
+  color: '#444',
+},
+observationText: {
+  fontSize: 14,
+  fontStyle: 'italic',
+  color: '#666',
+  marginTop: 4,
+},
+
 })

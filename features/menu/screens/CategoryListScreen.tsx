@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router'
 import { AppHeader } from '@/components/AppHeader'
 import { AppDrawer } from '@/components/AppDrawer'
 import { useCartStore } from '@/stores/cartStore'
+import { getCartTotals } from '@/lib/cart'
 
 export default function CategoryListScreen() {
   const branch = useOrderStore((s) => s.selectedBranch)
@@ -13,7 +14,8 @@ export default function CategoryListScreen() {
   const [drawerVisible, setDrawerVisible] = useState(false)
 
   const router = useRouter()
-  const { items, total } = useCartStore()
+  const { items } = useCartStore()
+  const { totalQuantity, totalPrice } = getCartTotals(items)
 
   useEffect(() => {
     if (!branch) return
@@ -39,11 +41,11 @@ export default function CategoryListScreen() {
   return (
     <>
       <AppHeader
-        onMenuPress={() => setDrawerVisible(true)}
+        onLeftPress={() => setDrawerVisible(true)}
         onCartPress={() => router.push('/cart')}
-        cartQuantity={items.length}
-        cartTotal={total}
-        logo={require('@/assets/favicon.png')} // Si tienes un logo personalizado
+        cartQuantity={totalQuantity}
+        cartTotal={totalPrice}
+        logo={require('@/assets/favicon.png')}
       />
 
       <AppDrawer visible={drawerVisible} onClose={() => setDrawerVisible(false)} />

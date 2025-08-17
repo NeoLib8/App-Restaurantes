@@ -1,14 +1,19 @@
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { View, Text, FlatList, Pressable, StyleSheet, Image, Alert } from 'react-native'
 import { useOrderStore } from '@/stores/orderStore'
 import { useCartStore } from '@/stores/cartStore'
 import { supabase } from '@/lib/supabase'
+import { AppHeader } from '@/components/AppHeader'
+import { getCartTotals } from '@/lib/cart'
 
 export default function ProductListScreen() {
   const { categoryId } = useLocalSearchParams<{ categoryId: string }>()
   const branch = useOrderStore((s) => s.selectedBranch)
   const addItem = useCartStore((s) => s.addItem)
+  const { items } = useCartStore()
+  const { totalQuantity, totalPrice } = getCartTotals(items)
+
   const [products, setProducts] = useState<any[]>([])
   const [categoryName, setCategoryName] = useState('')
 
@@ -37,39 +42,53 @@ export default function ProductListScreen() {
   }, [branch, categoryId])
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Productos - {categoryName}</Text>
-
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            {item.image_url && (
-              <Image source={{ uri: item.image_url }} style={styles.image} />
-            )}
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.desc}>{item.description}</Text>
-            <Text style={styles.price}>€{item.price.toFixed(2)}</Text>
-
-            <Pressable
-              style={styles.button}
-              onPress={() => {
-                addItem({
-                  product_id: item.id,
-                  name: item.name,
-                  base_price: item.price,
-                  quantity: 1
-                })
-                Alert.alert('Añadido al carrito')
-              }}
-            >
-              <Text style={styles.buttonText}>🛒 Añadir al carrito</Text>
-            </Pressable>
-          </View>
-        )}
+    <>
+      <AppHeader
+        leftIcon="arrow-back"
+        onLeftPress={() => router.back()}
+        onCartPress={() => router.push('/cart')}
+        cartQuantity={totalQuantity}
+        cartTotal={totalPrice}
       />
-    </View>
+
+      <View style={styles.container}>
+        <Text style={styles.title}>{categoryName}</Text>
+
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <Pressable
+              style={styles.card}
+              onPress={() => router.push(`/product/${item.id}`)}
+            >
+              {item.image_url && (
+                <Image source={{ uri: item.image_url }} style={styles.image} />
+              )}
+              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.desc}>{item.description}</Text>
+              <Text style={styles.price}>€{item.price.toFixed(2)}</Text>
+
+              <Pressable
+                style={styles.button}
+                onPress={(e) => {
+                  e.stopPropagation()
+                  addItem({
+                    product_id: item.id,
+                    name: item.name,
+                    base_price: item.price,
+                    quantity: 1
+                  })
+                  Alert.alert('Añadido al carrito')
+                }}
+              >
+                <Text style={styles.buttonText}>🛒 Añadir al carrito</Text>
+              </Pressable>
+            </Pressable>
+          )}
+        />
+      </View>
+    </>
   )
 }
 
